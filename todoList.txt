@@ -1,0 +1,77 @@
+Private Sub Workbook_Open()
+    GetCurrentDate
+    
+    SetHeaderNames
+    
+    TimeCounter
+    
+    Style
+    
+    Memo
+End Sub
+
+Function GetCurrentDate()
+    Dim curDate As String
+    curDate = Format(Now, "yyyy-mm-dd")
+    Debug.Print curDate
+    
+    ' Check the same date of sheet
+    Dim ws As Worksheet
+    Dim sheetExists As Boolean
+    sheetExists = False
+    
+    For Each ws In ThisWorkbook.Sheets
+        If ws.Name = curDate Then
+            sheetExists = True
+            Exit For
+        End If
+    Next ws
+    
+    Dim curSheet As Worksheet
+
+    If sheetExists Then
+        Debug.Print "exist"
+    Else
+        Set curSheet = ThisWorkbook.Sheets.Add(After:= _
+        ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+        curSheet.Name = curDate
+    End If
+End Function
+
+
+Function SetHeaderNames()
+    Dim headerList As Variant
+    Dim headerLen As Integer
+
+    headerList = Array("Start", "Over", "Hours", "To-do", "Distraction", "Finish")
+    headerLen = UBound(headerList) - LBound(headerList) + 1
+
+    For i = 1 To headerLen
+        Cells(1, i).Value = headerList(i - 1)
+    Next i
+End Function
+
+Function TimeCounter()
+    Range("C2", "C10").FormulaR1C1 = "= (C[-1] - C[-2]) * 24"
+    
+    Range("B12") = "TTL"
+    Range("C12").Formula = "= SUM(C2:C10)"
+End Function
+
+Function Style()
+    Columns("A:F").ColumnWidth = 6.44
+    Columns("E:E").AutoFit
+    Range("A1", "F1").Interior.Color = RGB(255, 255, 0)
+    Range("A1", "F10").Borders.LineStyle = xlDouble
+    Range("B12", "C12").Borders.LineStyle = xlDouble
+    Range("B12").Interior.Color = RGB(255, 255, 0)
+    Range("A1", "F12").HorizontalAlignment = xlCenter
+End Function
+
+Function Memo()
+    Range("H1") = "Memo"
+    Range("H1").Interior.Color = RGB(255, 255, 0)
+    Columns("H:H").ColumnWidth = 40
+    Range("H1", "H4").Borders.LineStyle = xlDouble
+    Range("H1", "H4").HorizontalAlignment = xlCenter
+End Function
